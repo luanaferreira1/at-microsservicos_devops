@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product-service
+          image: product-service:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_URL
+              value: "jdbc:postgresql://postgres-db:5432/productdb"
+            - name: DB_USER
+              value: "admin"
+            - name: DB_PASS
+              value: "admin123"
+            - name: DB_DRIVER
+              value: "org.postgresql.Driver"
+            - name: DB_DIALECT
+              value: "org.hibernate.dialect.PostgreSQLDialect"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+spec:
+  selector:
+    app: product-service
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
